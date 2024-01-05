@@ -2,15 +2,21 @@ import os
 import pickle
 from data_analyse_functions import *
 from data_store_functions import *
+from config import *
 
 # 合并字典的函数
 # 可以合并节点字典和relation字典
 def merge_dict(dict_list):
     total_dict = {}
     for dict in dict_list:
-        total_dict.update(dict)
+        for key in dict:
+            if key in total_dict:
+                if total_dict[key].split("_")[0] == "null" and dict[key].split("_")[0] != "null":
+                    total_dict[key] = dict[key]
+            else:
+                total_dict[key] = dict[key]
     return total_dict
-
+            
 # 生成节点字典
 def generate_node_dict(node_set):
     # 唯一id对应uuid的字典
@@ -55,50 +61,48 @@ def encode_triple(triple_file_path, uuid_id_dict, uuid_name_dict, relation_dict,
             file.write(line)
 
 if __name__ =="__main__":
-# def run():
-    result_path = "./result/splited_result/"
     # 节点字典列表
     node_list = []
     # 关系字典列表
     relation_list = []
-    for file in os.listdir(result_path):
-        node_path = result_path + file + "/uuid_name_dict.pkl"
-        relation_path = result_path + file + "/id_relation_dict.pkl"
+    for file in os.listdir(splited_result_path):
+        node_path = splited_result_path + "/" + file + "/uuid_name_dict.pkl"
+        relation_path = splited_result_path + "/" + file + "/id_relation_dict.pkl"
         with open(node_path, "rb") as f:
             node_dict = pickle.load(f)
             node_list.append(node_dict)
         with open(relation_path, "rb") as f:
             relation_dict = pickle.load(f)
             relation_list.append(relation_dict)
-            
+    
     # 获取去重后的关系字典和节点字典
     relation_dict = generate_relation_dict(merge_dict(relation_list))
     uuid_id_dict, uuid_name_dict, id_name_dict = generate_node_dict(merge_dict(node_list))
     # 保存统一的字典
-    total_save_path = "./result/total_result/"
     # 清理主文件夹
     print("保存字典中。。。")
-    clean_folder(total_save_path)
+    clean_folder(total_result_path)
     # 编码节点, 关系
-    save_dict_to_local(save_item = uuid_id_dict, save_path = total_save_path, file_name = "id_uuid_dict")
-    save_dict_to_local(save_item = uuid_name_dict, save_path = total_save_path, file_name = "uuid_name_dict") 
-    save_dict_to_local(save_item = id_name_dict, save_path = total_save_path, file_name = "id_name_dict")    
-    save_dict_to_local(save_item = relation_dict, save_path = total_save_path, file_name = "id_relation_dict")
+    save_dict_to_local(save_item = uuid_id_dict, save_path = total_result_path, file_name = "id_uuid_dict")
+    save_dict_to_local(save_item = uuid_name_dict, save_path = total_result_path, file_name = "uuid_name_dict") 
+    save_dict_to_local(save_item = id_name_dict, save_path = total_result_path, file_name = "id_name_dict")    
+    save_dict_to_local(save_item = relation_dict, save_path = total_result_path, file_name = "id_relation_dict")
     print("保存字典完成")
     # 节点压缩， 压缩临时文件， 要不要弄？？？
     # TODO
     
     # 提取各种类型的节点
     node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamepipe", "memory"]
-    os.mkdir("./result/total_result/types/")
+    
+    os.mkdir(total_result_path + "/types/")
     for node_type in node_type_list:
-        node_type_save_path = "./result/total_result/types/"
+        node_type_save_path = total_result_path + "/types/"
         extract_node_in_type(id_name_dict, node_type, node_type_save_path)
     
     # 编码三元组 nodeid1, nodeid2, relaitonid, node1, node2, relation, timestamp
-    for file in os.listdir(result_path):
-        triple_path = result_path + file + "/triple.txt"
-        save_path = result_path + file +"/encode_triple.txt"
+    for file in os.listdir(splited_result_path):
+        triple_path = splited_result_path + "/" + file + "/triple.txt"
+        save_path = splited_result_path + "/" + file +"/encode_triple.txt"
         print("处理%s中。。。。"%(file))
         encode_triple(triple_path, uuid_id_dict, uuid_name_dict, relation_dict, save_path)
         print("%s处理完成"%(file))

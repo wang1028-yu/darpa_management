@@ -118,7 +118,7 @@ def parallel_process_single_data(file_path, num_processes):
             process.close()
             process.join()
     
-    save_path = "./result/splited_result/" + file_name
+    save_path = splited_result_path + file_name
     node_set = set(node_set)
     relation_set = set(relation_set)
     uuid_name_dict = generate_node_dict_2(node_set)
@@ -136,7 +136,8 @@ def uuid_to_nameid(file_path, save_path, id_uuid_dict, uuid_name_dict):
     pass
 
 if __name__=="__main__":
-    mkdir_multi("./result/splited_result/")
-    mkdir_multi("./result/total_result/")
-    process_all_file(cadets_source_data, num_processes)
-    # process_all_file("./example", 1)
+    mkdir_multi(splited_result_path)
+    mkdir_multi(total_result_path)
+    # process_all_file(trace_source_data, num_processes)
+    process_all_file("./example", 1)
+    # process_all_file("./test", 1)
