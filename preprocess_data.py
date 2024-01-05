@@ -118,7 +118,7 @@ def parallel_process_single_data(file_path, num_processes):
             process.close()
             process.join()
     
-    save_path = splited_result_path + file_name
+    save_path = splited_result_path + "/" + file_name
     node_set = set(node_set)
     relation_set = set(relation_set)
     uuid_name_dict = generate_node_dict_2(node_set)
