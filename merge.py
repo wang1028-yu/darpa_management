@@ -3,7 +3,7 @@ import pickle
 from data_analyse_functions import *
 from data_store_functions import *
 from config import *
-
+    
 # 合并字典的函数
 # 可以合并节点字典和relation字典
 def merge_dict(dict_list):

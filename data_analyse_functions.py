@@ -1,5 +1,18 @@
+import re
 from data_store_functions import *
 import datetime
+import ujson
+import json
+
+def load_json(line):
+    return ujson.loads(line)
+    # return json.loads(line)
+
+# 提取节点类型
+def extract_nodetype(line):
+    data = ujson.loads(line)
+    type = list(data["datum"].keys())[0]
+    return type
 
 # 处理Subject类型数据
 def parse_subject_data(line):
@@ -55,6 +68,17 @@ def parse_principal_data(line):
 
 # 提取netflow信息
 def parse_netflow_data(line):
+    # node_dict = {}
+    # res = re.findall(
+    #     'NetFlowObject":{"uuid":"(.*?)"(.*?)"localAddress":"(.*?)","localPort":(.*?),"remoteAddress":"(.*?)","remotePort":(.*?),',
+    #     line)[0]
+    # node_dict["type"] = "netflow"
+    # node_dict["uuid"] = res[0]   
+    # node_dict["localAddress"] = res[2]
+    # node_dict['localPort'] = res[3]
+    # node_dict['remoteAddress'] = res[4]
+    # node_dict["remotePort"]  = res[5]
+    # return node_dict
     data = line["com.bbn.tc.schema.avro.cdm18.NetFlowObject"]
     node_dict = dict()
     node_dict["type"] = "netflow"
