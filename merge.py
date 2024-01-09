@@ -60,13 +60,15 @@ def encode_triple(triple_file_path, uuid_id_dict, uuid_name_dict, relation_dict,
         for line in result_list:
             file.write(line)
 
-if __name__ =="__main__":
+# if __name__ =="__main__":
+def run():
     # 节点字典列表
     node_list = []
     # 关系字典列表
     relation_list = []
     for file in os.listdir(splited_result_path):
         node_path = splited_result_path + "/" + file + "/uuid_name_dict.pkl"
+        print(node_path)
         relation_path = splited_result_path + "/" + file + "/id_relation_dict.pkl"
         with open(node_path, "rb") as f:
             node_dict = pickle.load(f)
@@ -92,7 +94,7 @@ if __name__ =="__main__":
     # TODO
     
     # 提取各种类型的节点
-    node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamepipe", "memory"]
+    node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamedpipe", "memory"]
     
     os.mkdir(total_result_path + "/types/")
     for node_type in node_type_list:

@@ -2,7 +2,6 @@ import re
 from data_store_functions import *
 import datetime
 import ujson
-import json
 
 def load_json(line):
     return ujson.loads(line)
@@ -44,6 +43,12 @@ def parse_subject_data(line):
         node_dict['cwd'] = data['properties']['map']['cwd']
     except:
         node_dict["cwd"] = "null"
+    try:
+        node_dict["cmdLine"] = data["cmdLine"]["string"]
+        if node_dict["cmdLine"] == None:
+            node_dict["cmdLine"] = "null"
+    except:
+        node_dict["cmdLine"] = "null" 
     return node_dict
     
 # 处理principal类型数据
@@ -261,3 +266,13 @@ def extract_time(file_path):
 # 时间戳转日期
 def timestamp_to_date(timestamp):
     return datetime.datetime.fromtimestamp(timestamp)
+
+# 节点去重
+def node_distinct(node_path):
+    with open(node_path, "rb") as file:
+        node_list = pickle.load(file)
+        print(len(node_list))
+        distinct_set = set()
+        for item in node_list:
+            distinct_set.add(node_list[item])
+        print(len(distinct_set))
