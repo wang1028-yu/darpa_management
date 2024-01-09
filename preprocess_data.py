@@ -1,11 +1,9 @@
 from config import *
 import os
-from data_analyse_functions import *
 from multiprocessing import Pool, Manager, Process
 import multiprocessing as mp
 from tqdm import tqdm
 import pandas as pd
-from data_store_functions import *
 import time
                 
 # 处理所有的文件
@@ -134,5 +132,5 @@ def run():
     # start =time.time()
     mkdir_multi(splited_result_path)
     mkdir_multi(total_result_path)
-    # process_all_file_miti_processes("./example", 1)
-    process_all_file_miti_processes(trace_source_data, num_processes)
+    process_all_file_miti_processes("./example", 1)
+    # process_all_file_miti_processes(trace_source_data, num_processes)

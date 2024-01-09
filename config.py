@@ -2,6 +2,9 @@ import multiprocessing as mp
 import sys
 sys.path.append("../requirements/OpenKE")
 import openke
+sys.path.append("./utils")
+from data_analyse_functions import *
+from data_store_functions import *
 
 source_data_path = "/home/wcy/workspace/source_data/darpa"
 trace_source_data = source_data_path + "/trace"

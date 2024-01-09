@@ -1,9 +1,8 @@
 import os
 import pickle
-from data_analyse_functions import *
-from data_store_functions import *
 from config import *
-    
+
+
 # 合并字典的函数
 # 可以合并节点字典和relation字典
 def merge_dict(dict_list):
@@ -67,9 +66,9 @@ def run():
     # 关系字典列表
     relation_list = []
     for file in os.listdir(splited_result_path):
-        node_path = splited_result_path + "/" + file + "/uuid_name_dict.pkl"
+        node_path = splited_result_path + file + "/uuid_name_dict.pkl"
         print(node_path)
-        relation_path = splited_result_path + "/" + file + "/id_relation_dict.pkl"
+        relation_path = splited_result_path + file + "/id_relation_dict.pkl"
         with open(node_path, "rb") as f:
             node_dict = pickle.load(f)
             node_list.append(node_dict)
