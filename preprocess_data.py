@@ -128,9 +128,9 @@ def generate_relation_dict_2(relation_set):
     return id_relation_dict
 
 # if __name__=="__main__":
-def run():
+def run(file_path, num_processes):
     # start =time.time()
     mkdir_multi(splited_result_path)
     mkdir_multi(total_result_path)
-    process_all_file_miti_processes("./example", 1)
+    process_all_file_miti_processes(file_path, num_processes)
     # process_all_file_miti_processes(trace_source_data, num_processes)

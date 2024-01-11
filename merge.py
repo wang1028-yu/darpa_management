@@ -2,7 +2,6 @@ import os
 import pickle
 from config import *
 
-
 # 合并字典的函数
 # 可以合并节点字典和relation字典
 def merge_dict(dict_list):
@@ -91,11 +90,10 @@ def run():
     print("保存字典完成")
     # 节点压缩， 压缩临时文件， 要不要弄？？？
     # TODO
-    
+
+    os.mkdir(total_result_path + "/types/")
     # 提取各种类型的节点
     node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamedpipe", "memory"]
-    
-    os.mkdir(total_result_path + "/types/")
     for node_type in node_type_list:
         node_type_save_path = total_result_path + "/types/"
         extract_node_in_type(id_name_dict, node_type, node_type_save_path)

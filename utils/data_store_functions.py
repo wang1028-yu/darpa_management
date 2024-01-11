@@ -1,6 +1,7 @@
 import pickle
 import os
 import shutil
+from data_analyse_functions import *
 # 保存的函数
 def save_dict_to_local(save_item, save_path, file_name):
     # 存两份，pickle一份，txt一份
@@ -40,3 +41,31 @@ def mkdir_multi(path):
     else:
         # 如果目录存在则不创建，并提示目录已存在
         return False
+
+# 加载pickle文件
+def load_pickle(pickle_path):
+    with open(pickle_path, "rb") as file:
+        result = pickle.load(file)
+    return result
+
+# 提取某种类型的数据
+def extract_node_in_type(id_name_dict, node_type, save_path):
+    node_dict = {}
+    for item in id_name_dict:
+        this_node_type = id_name_dict[item].split("_")[-1]
+        if this_node_type == node_type:
+            node_dict[item]  = id_name_dict[item]
+    save_dict_to_local(node_dict, save_path, node_type)
+    return 0
+
+# 提取所有类型的节点
+def extract_all_type_node(save_path, dict):
+    try:
+        os.mkdir(save_path + "/types/")
+    except:
+        pass
+    # 提取各种类型的节点
+    node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamedpipe", "memory"]
+    for node_type in node_type_list:
+        node_type_save_path = save_path + "/types/"
+        extract_node_in_type(dict, node_type, node_type_save_path)

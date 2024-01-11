@@ -2,6 +2,7 @@ import re
 from data_store_functions import *
 import datetime
 import ujson
+import pickle
 
 def load_json(line):
     return ujson.loads(line)
@@ -240,18 +241,11 @@ def parse_event_data(line):
         node_dict["type"] = "null"
     return node_dict
 
-# 提取某种类型的数据
-def extract_node_in_type(id_name_dict, node_type, save_path):
-    node_dict = {}
-    for item in id_name_dict:
-        this_node_type = id_name_dict[item].split("_")[-1]
-        if this_node_type == node_type:
-            node_dict[item]  = id_name_dict[item]
-    save_dict_to_local(node_dict, save_path, node_type)
-    return 0
 
 # 深度优先搜索
-def dfs():
+# 输入：进程节点， 邻接列表字典
+def dfs(node, adj_list_dict):
+    
     pass
 
 # 找到文件的最小时间和最大时间
@@ -276,3 +270,24 @@ def node_distinct(node_path):
         for item in node_list:
             distinct_set.add(node_list[item])
         print(len(distinct_set))
+        
+# 生成邻接表字典
+def generate_adj_list_dict(file_path):
+    adj_list_dict = dict()
+    with open(file_path, "r") as file:
+        for line in file:
+            details = line.split("\t")
+            contain_none = any(item == "None" for item in details)
+            if contain_none:
+                continue
+            subject = int(details[0])
+            object = int(details[1])
+            relation = int(details[2])
+            timestamp = int(details[-1].replace("\n", ""))
+            object_dict = {"relation":relation, "object":object, "timestamp":timestamp}
+            if subject in adj_list_dict:
+                adj_list_dict[subject].append(object_dict)
+            else:
+                adj_list_dict[subject] = []
+                adj_list_dict[subject].append(object_dict)
+    return adj_list_dict
