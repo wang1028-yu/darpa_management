@@ -245,8 +245,25 @@ def parse_event_data(line):
 # 深度优先搜索
 # 输入：进程节点， 邻接列表字典
 def dfs(node, adj_list_dict):
-    
-    pass
+    # 深搜栈
+    stack = []
+    # 深搜结果
+    result = []
+    edges = adj_list_dict[node]
+    for adj_edge in edges:
+        stack.append(adj_edge)
+        while len(stack) > 0:
+            current_edge = stack.pop()
+            current_node = int(current_edge["object"])
+            current_time = int(current_edge["timestamp"])
+            if current_node in adj_list_dict.keys():
+                next_edges = adj_list_dict[current_node]
+                for next_edge in next_edges:
+                    next_time = int(next_edge["timestamp"])
+                    if next_time > current_time:
+                        stack.append(next_edge)
+            result.append(current_edge)
+    return result
 
 # 找到文件的最小时间和最大时间
 def extract_time(file_path):
@@ -283,6 +300,9 @@ def generate_adj_list_dict(file_path):
             subject = int(details[0])
             object = int(details[1])
             relation = int(details[2])
+            # subject_node = details[4]
+            # if "file" in subject_node:
+            #     print(line)
             timestamp = int(details[-1].replace("\n", ""))
             object_dict = {"relation":relation, "object":object, "timestamp":timestamp}
             if subject in adj_list_dict:
@@ -291,3 +311,6 @@ def generate_adj_list_dict(file_path):
                 adj_list_dict[subject] = []
                 adj_list_dict[subject].append(object_dict)
     return adj_list_dict
+
+def generate_ancestor_list():
+    pass
