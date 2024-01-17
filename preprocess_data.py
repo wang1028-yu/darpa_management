@@ -32,7 +32,7 @@ def process_single_file_single_process(file_path):
                 # 说明这行是event
                 node = parse_event_data(line)
                 # 添加到三元组
-                triple_list.append([node['subject'], node['type'], node["predicateObject"], node["timestamp"]])
+                triple_list.append([node['sub'], node['type'], node["obj"], node["timestamp"]])
                 # 添加到relation字典
                 relation_set.append(node["type"])
                 time_list.append(node["timestamp"] / 1000000000)
@@ -129,8 +129,6 @@ def generate_relation_dict_2(relation_set):
 
 # if __name__=="__main__":
 def run(file_path, num_processes):
-    # start =time.time()
     mkdir_multi(splited_result_path)
     mkdir_multi(total_result_path)
     process_all_file_miti_processes(file_path, num_processes)
-    # process_all_file_miti_processes(trace_source_data, num_processes)

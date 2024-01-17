@@ -26,8 +26,9 @@ def extract_all_file_nodes(file_dir_path):
 
 # 主要任务，压缩与处理
 if __name__ == "__main__":
-    # extract_all_file_nodes(splited_result_path)
-    # file_dir_path = splited_result_path
+    extract_all_file_nodes(splited_result_path)
+    
+    file_dir_path = splited_result_path
     # test_file_path = splited_result_path + "ta1-trace-e3-official-1.json/encode_triple.txt"
     
     # file_path = splited_result_path + "ta1-trace-e3-official-1.json/"
@@ -35,12 +36,14 @@ if __name__ == "__main__":
     # subject_node_path = file_path + "types/subject.pkl"
     
     # file_path = splited_result_path + "2.json/"
-    file_path = "./result/splited_result/ta1-trace-e3-official.json.1/"
-    encode_triple_path = file_path + "encode_triple.txt"
-    subject_node_path = file_path + "types/subject.pkl"
+    # file_path = "./result/splited_result/ta1-trace-e3-official.json.1/"
+    # encode_triple_path = file_path + "encode_triple.txt"
+    # subject_node_path = file_path + "types/subject.pkl"
     # 生成邻接列表字典
-    adj_list_dict = generate_adj_list_dict(encode_triple_path)
-    # print(adj_list_dict)
+    # adj_list_dict = generate_adj_list_dict(encode_triple_path)
+
+
+
     # subject_nodes = load_pickle(subject_node_path)    
     # subject_nodes_id = list(subject_nodes.keys())
     # for node in subject_nodes:

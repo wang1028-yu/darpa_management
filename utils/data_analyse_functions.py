@@ -74,17 +74,6 @@ def parse_principal_data(line):
 
 # 提取netflow信息
 def parse_netflow_data(line):
-    # node_dict = {}
-    # res = re.findall(
-    #     'NetFlowObject":{"uuid":"(.*?)"(.*?)"localAddress":"(.*?)","localPort":(.*?),"remoteAddress":"(.*?)","remotePort":(.*?),',
-    #     line)[0]
-    # node_dict["type"] = "netflow"
-    # node_dict["uuid"] = res[0]   
-    # node_dict["localAddress"] = res[2]
-    # node_dict['localPort'] = res[3]
-    # node_dict['remoteAddress'] = res[4]
-    # node_dict["remotePort"]  = res[5]
-    # return node_dict
     data = line["com.bbn.tc.schema.avro.cdm18.NetFlowObject"]
     node_dict = dict()
     node_dict["type"] = "netflow"
@@ -223,22 +212,55 @@ def parse_memoryobject_data(line):
 def parse_event_data(line):
     data = line['com.bbn.tc.schema.avro.cdm18.Event']
     node_dict = dict()
-    try:
-        node_dict["subject"] = data["subject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
-    except:
-        node_dict["subject"] = "null"
-    try:
-        node_dict["predicateObject"] = data["predicateObject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
-    except:
-        node_dict["predicateObject"] = "null"
-    try:
-        node_dict["timestamp"] = data["timestampNanos"]
-    except:
-        node_dict["timestampNanos"] = "null"
+    # 在溯源图中的方向是A指向B
+    A_B_list = ["EVENT_WRITE", "EVENT_SENDMSG", "EVENT_MMAP", "EVENT_FORK", "EVENT_UNIT", "EVENT_CONNECT", "EVENT_CREATE_OBJECT", "EVENT_OPEN", "EVENT_EXECUTE", "EVENT_MPROTECT", "EVENT_EXIT", "EVENT_CLOSE", "EVENT_CHANGE_PRINCIPAL", "EVENT_CLONE", "EVENT_UNLINK", "EVENT_MODIFY_FILE_ATTRIBUTES", "EVENT_TRUNCATE", "EVENT_OTHER"]
+    # 在溯源图中的方向是B指向A
+    B_A_list = ["EVENT_RECVMSG", "EVENT_READ", "EVENT_LOADLIBRARY", "EVENT_ACCEPT"]
+    # 自己对自己操作，有两个object
+    triple_list = ["EVENT_RENAME", "EVENT_LINK", "EVENT_UPDATE"]
     try:
         node_dict["type"] = data["type"]
     except:
         node_dict["type"] = "null"
+        
+    if node_dict["type"] in triple_list:
+        try:
+            node_dict["subject"] = data["subject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
+        except:
+            node_dict["subject"] = "null"
+        try:
+            node_dict["predicateObject"] = data["predicateObject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
+        except:
+            node_dict["predicateObject"] = "null"
+        try:
+            node_dict["timestamp"] = data["timestampNanos"]
+        except:
+            node_dict["timestampNanos"] = "null"
+        try:
+            node_dict["predicateObject2"] = data["predicateObject2"]["com.bbn.tc.schema.avro.cdm18.UUID"]
+        except:
+            node_dict["predicateObject2"] = "null"
+        node_dict["sub"] = node_dict["predicateObject"]
+        node_dict["obj"] = node_dict["predicateObject2"]
+    else:
+        try:
+            node_dict["subject"] = data["subject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
+        except:
+            node_dict["subject"] = "null"
+        try:
+            node_dict["predicateObject"] = data["predicateObject"]["com.bbn.tc.schema.avro.cdm18.UUID"]
+        except:
+            node_dict["predicateObject"] = "null"
+        try:
+            node_dict["timestamp"] = data["timestampNanos"]
+        except:
+            node_dict["timestampNanos"] = "null"
+        if node_dict["type"] in A_B_list:
+            node_dict["sub"] = node_dict["subject"]
+            node_dict["obj"] = node_dict["predicateObject"]
+        elif node_dict["type"] in B_A_list:
+            node_dict["sub"] = node_dict["predicateObject"]
+            node_dict["obj"] = node_dict["subject"]  
     return node_dict
 
 
