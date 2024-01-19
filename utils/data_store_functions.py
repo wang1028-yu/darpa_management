@@ -21,7 +21,13 @@ def save_triple_to_local(triple, save_path, file_name):
         for item in triple:
             line = item[0] + "\t" + item[1] + "\t" + item[2] + "\t" + str(item[3])
             file.write(line + "\n")
-            
+
+def save_to_local(save_item, save_path):
+    with open(save_path, "a+") as file:
+        for line in save_item:
+            file.write(line + "\n")
+        file.close()
+
 # 清除文件夹
 def clean_folder(file_path):
     folders = os.path.exists(file_path)

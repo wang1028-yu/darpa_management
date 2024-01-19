@@ -1,7 +1,8 @@
 import os
 import time
 from config import *
-
+from utils.data_store_functions import *
+from utils.data_analyse_functions import *
 
 def extract_dict_from_txt(file_path):
     node_dict = dict()
@@ -23,12 +24,37 @@ def extract_all_file_nodes(file_dir_path):
         extract_all_type_node(file_path, node_dict)
         print("文件%s处理完成"%(file_path))
 
-
+# 数据压缩函数
+def compress_data(file_path):
+    distinct_set = set()
+    with open(file_path + "/encode_triple.txt", "r") as file:
+        for line in file:
+            [id1, id2, relation_id, node1, node2, relation, timestamp] = line.split("\t")
+            detail = "%s\t%s\t%s"%(id1, id2, relation_id)
+            distinct_set.add(detail)
+    return distinct_set
+        
 # 主要任务，压缩与处理
 if __name__ == "__main__":
-    extract_all_file_nodes(splited_result_path)
+    # extract_all_file_nodes(splited_result_path)
     
-    file_dir_path = splited_result_path
+    # 去重
+    attack_file_list = ["ta1-trace-e3-official-1.json.3", "ta1-trace-e3-official-1.json.4", "ta1-trace-e3-official.json.125"]
+    for file in os.listdir(splited_result_path):
+        file_path = splited_result_path + "/" + file
+        if file in attack_file_list:
+            continue
+        else:
+            print("处理文件%s中"%(file))
+            distinct_set = compress_data(file_path)
+            print("文件%s处理完成"%(file))
+            save_path = file_path + "/compress.txt"
+            save_to_local(save_item = distinct_set, save_path = save_path)    
+    
+    # 深度优先搜索，放后面弄
+    
+    
+    # file_dir_path = splited_result_path
     # test_file_path = splited_result_path + "ta1-trace-e3-official-1.json/encode_triple.txt"
     
     # file_path = splited_result_path + "ta1-trace-e3-official-1.json/"
