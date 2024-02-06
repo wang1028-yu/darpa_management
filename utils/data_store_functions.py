@@ -23,10 +23,17 @@ def save_triple_to_local(triple, save_path, file_name):
             file.write(line + "\n")
 
 def save_to_local(save_item, save_path):
+    try:
+        os.remove(save_path)
+    except:
+        pass
     with open(save_path, "a+") as file:
         for line in save_item:
             file.write(line + "\n")
         file.close()
+    save_path = save_path.replace(".txt", ".pkl")
+    with open(save_path, 'wb') as f:
+        pickle.dump(save_item, f)
 
 # 清除文件夹
 def clean_folder(file_path):

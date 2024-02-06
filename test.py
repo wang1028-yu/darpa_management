@@ -46,9 +46,19 @@ def test_chunk_file(file_path):
 
 
 if __name__ =="__main__":
-    with open("./example/1.json", "r") as file:
-        data = pd.read_json(file, lines=True)
-        print(data[1:4])
+    # with open("./example/1.json", "r") as file:
+    #     data = pd.read_json(file, lines=True)
+    #     print(data[1:4])
     # data = pd.read_json("./example/1.json", lines=True)
     # for line in data.itertuples():
     #     print(line)
+    
+    
+    # 异构图数据
+    node_data = {
+        "file" : [1, 2, 3, 4, 5],
+        "process" : [6, 7, 8, 9, 10],
+        "netflow" : [11, 12, 13]
+    }
+    # 同构图数据
+    node_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]

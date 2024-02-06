@@ -5,6 +5,8 @@ import multiprocessing as mp
 from tqdm import tqdm
 import pandas as pd
 import time
+from utils.data_analyse_functions import *
+from utils.data_store_functions import *
                 
 # 处理所有的文件
 def process_all_file_miti_processes(file_dir_path, num_processes):
@@ -23,8 +25,8 @@ def process_single_file_single_process(file_path):
     relation_set = list()
     detail_set = list()
     triple_list = list()
+    node_types = set()
     with open(file_path, "r") as file:
-        # pbar = tqdm(total=len(file.readlines()))
         for line in file:
             type  = extract_nodetype(line)
             line = load_json(line)["datum"]
@@ -40,33 +42,24 @@ def process_single_file_single_process(file_path):
                 if type == "com.bbn.tc.schema.avro.cdm18.Subject":
                     node = parse_subject_data(line)
                     node_set.append((node["uuid"], node["name"] + "_" + str(node["ppid"]) + "_" + str(node["cmdLine"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"],node))
-                elif type == "com.bbn.tc.schema.avro.cdm18.Principal":
-                    # print(type)
-                    node = parse_principal_data(line)
-                    node_set.append((node['uuid'], str(node['userId']) + "_" + node["type"]))
-                    detail_set.append((node["uuid"],node))
+                # elif type == "com.bbn.tc.schema.avro.cdm18.Principal":
+                #     node = parse_principal_data(line)
+                #     node_set.append((node['uuid'], str(node['userId']) + "_" + node["type"]))
                 elif type == 'com.bbn.tc.schema.avro.cdm18.NetFlowObject':
                     node = parse_netflow_data(line)
                     node_set.append((node["uuid"], str(node["localAddress"])+":"+str(node["localPort"]) + "->" + str(node["remoteAddress"]) + ":" + str(node["remotePort"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"], node))
                 elif type == 'com.bbn.tc.schema.avro.cdm18.FileObject':
                     node = parse_fileobject_data(line)
                     node_set.append((node["uuid"], str(node["path"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"], node))
-                elif type == 'com.bbn.tc.schema.avro.cdm18.SrcSinkObject':
-                    node = parse_srcsinkobject_data(line)
-                    node_set.append((node["uuid"], str(node["base_pid"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"], node))
-                elif type == 'com.bbn.tc.schema.avro.cdm18.UnnamedPipeObject':
-                    node = parse_unnamedpipeobject_data(line)
-                    node_set.append((node["uuid"], str(node["pid"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"], node))
-                elif type == 'com.bbn.tc.schema.avro.cdm18.MemoryObject':
-                    node = parse_memoryobject_data(line)
-                    node_set.append((node["uuid"], str(node["memoryAddress"]) + "_" + node["type"]))
-                    detail_set.append((node["uuid"], node))
-            # pbar.update(1)
+                # elif type == 'com.bbn.tc.schema.avro.cdm18.SrcSinkObject':
+                #     node = parse_srcsinkobject_data(line)
+                #     node_set.append((node["uuid"], str(node["base_pid"]) + "_" + node["type"]))
+                # elif type == 'com.bbn.tc.schema.avro.cdm18.UnnamedPipeObject':
+                #     node = parse_unnamedpipeobject_data(line)
+                #     node_set.append((node["uuid"], str(node["pid"]) + "_" + node["type"]))
+                # elif type == 'com.bbn.tc.schema.avro.cdm18.MemoryObject':
+                #     node = parse_memoryobject_data(line)
+                #     node_set.append((node["uuid"], str(node["memoryAddress"]) + "_" + node["type"]))
     file_name = file_path.split("/")[-1]
     save_path = splited_result_path + "/" + file_name
     node_set = set(node_set)

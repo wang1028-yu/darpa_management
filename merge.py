@@ -53,6 +53,8 @@ def encode_triple(triple_file_path, uuid_id_dict, uuid_name_dict, relation_dict,
             id2 = uuid_id_dict.get(node2)
             name2 = uuid_name_dict.get(node2)
             relaiton_id = relation_dict.get(relation)
+            if None in [name1, name2]:
+                continue
             result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s"%(id1, id2, relaiton_id, name1, name2, relation, timestamp))
     with open(save_path, "w") as file:
         for line in result_list:
@@ -93,7 +95,8 @@ def run():
 
     os.mkdir(total_result_path + "/types/")
     # 提取各种类型的节点
-    node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamedpipe", "memory"]
+    # node_type_list = ["subject", "principal", "netflow", "file", "srcsink", "unnamedpipe", "memory"]
+    node_type_list = ["subject", "netflow", "file"]
     for node_type in node_type_list:
         node_type_save_path = total_result_path + "/types/"
         extract_node_in_type(id_name_dict, node_type, node_type_save_path)

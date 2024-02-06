@@ -15,6 +15,7 @@ num_processes = 30
 
 splited_result_path = "./result/splited_result/"
 total_result_path = "./result/total_result/"
+
 # splited_result_path = "./test/splited_result/"
 # total_result_path = "./test/total_result/"
 

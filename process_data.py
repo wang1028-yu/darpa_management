@@ -33,23 +33,59 @@ def compress_data(file_path):
             detail = "%s\t%s\t%s"%(id1, id2, relation_id)
             distinct_set.add(detail)
     return distinct_set
-        
-# 主要任务，压缩与处理
-if __name__ == "__main__":
-    # extract_all_file_nodes(splited_result_path)
-    
+
+def distinct_single_data():
     # 去重
+    for file_path in filter_attack_data():
+        print("处理文件%s中"%(file_path))
+        distinct_set = compress_data(file_path)
+        print("文件%s处理完成"%(file_path))
+        save_path = file_path + "/compress.txt"
+        save_to_local(save_item = distinct_set, save_path = save_path)   
+    return 0
+
+# 过滤攻击数据文件，保留正常数据文件
+def filter_attack_data():
+    benign_data_list = []
     attack_file_list = ["ta1-trace-e3-official-1.json.3", "ta1-trace-e3-official-1.json.4", "ta1-trace-e3-official.json.125"]
     for file in os.listdir(splited_result_path):
         file_path = splited_result_path + "/" + file
         if file in attack_file_list:
             continue
         else:
-            print("处理文件%s中"%(file))
-            distinct_set = compress_data(file_path)
-            print("文件%s处理完成"%(file))
-            save_path = file_path + "/compress.txt"
-            save_to_local(save_item = distinct_set, save_path = save_path)    
+            benign_data_list.append(file_path)
+    return benign_data_list
+
+# 处理异构图
+def distinct_total_data_heterogeneous():
+    total_set = set()
+    for file in filter_attack_data():
+        compress_data_path = file + "/compress.txt"
+        print("处理文件%s中"%(compress_data_path))
+        with open(compress_data_path, "r") as compress_data:
+            for line in compress_data:
+                total_set.add(line)
+        print("文件%s处理完成"%(compress_data_path))
+    save_to_local(save_item = total_set, save_path = total_result_path + "triple.txt") 
+
+# 处理同构图数据
+def distinct_total_data_homogeneous():
+    total_set = set()
+    for file in filter_attack_data():
+        compress_data_path = file + "/compress.txt"
+        print("处理文件%s中"%(compress_data_path))
+        with open(compress_data_path, "r") as compress_data:
+            for line in compress_data:
+                total_set.add(line)
+        print("文件%s处理完成"%(compress_data_path))
+    save_to_local(save_item = total_set, save_path = total_result_path + "triple.txt") 
+    
+# 主要任务，压缩与处理
+if __name__ == "__main__":
+    # distinct_single_data()
+    # extract_all_file_nodes(splited_result_path)
+    #  distinct_total_data_heterogeneous()
+     distinct_total_data_homogeneous()
     
     # 深度优先搜索，放后面弄
     
