@@ -1,7 +1,7 @@
 import pickle
 import os
 import shutil
-from data_analyse_functions import *
+
 # 保存的函数
 def save_dict_to_local(save_item, save_path, file_name):
     # 存两份，pickle一份，txt一份
@@ -65,9 +65,20 @@ def load_pickle(pickle_path):
 def extract_node_in_type(id_name_dict, node_type, save_path):
     node_dict = {}
     for item in id_name_dict:
-        this_node_type = id_name_dict[item].split("_")[-1]
+        this_node_type = item.split("_")[-1]
         if this_node_type == node_type:
-            node_dict[item]  = id_name_dict[item]
+            # node_dict[item]  = id_name_dict[item]
+            node_dict[item] = id_name_dict[item]
+    save_dict_to_local(node_dict, save_path, node_type)
+    return 0
+
+# 提取某种类型的数据
+def extract_node_in_type_with_total_dict(id_name_dict, node_type, save_path):
+    node_dict = {}
+    for item in id_name_dict:
+        this_node_type = item.split("_")[-1]
+        if this_node_type == node_type:
+            node_dict[item] = id_name_dict[item]
     save_dict_to_local(node_dict, save_path, node_type)
     return 0
 

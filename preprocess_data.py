@@ -23,9 +23,7 @@ def process_single_file_single_process(file_path):
     time_list = list()
     node_set = list()
     relation_set = list()
-    detail_set = list()
     triple_list = list()
-    node_types = set()
     with open(file_path, "r") as file:
         for line in file:
             type  = extract_nodetype(line)
@@ -71,7 +69,6 @@ def process_single_file_single_process(file_path):
     # 保存节点集，关系集，细节，三元组, 时间
     save_dict_to_local(save_item = uuid_name_dict, save_path = save_path, file_name = "uuid_name_dict")   
     save_dict_to_local(save_item = id_relation_dict, save_path = save_path, file_name = "id_relation_dict")
-    save_dict_to_local(save_item = detail_set, save_path = save_path, file_name = "details")
     save_dict_to_local(save_item= time_dict,save_path=save_path, file_name="time")
     save_triple_to_local(triple = triple_list, save_path = save_path, file_name = "triple")
     
