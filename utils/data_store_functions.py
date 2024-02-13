@@ -14,6 +14,7 @@ def save_dict_to_local(save_item, save_path, file_name):
                 f.write(str(item) + "\t" + str(save_item[item]) + "\n")
     except:
         os.remove(save_path + "/" + file_name +".txt")
+
         
 # 把三元组存储到本地
 def save_triple_to_local(triple, save_path, file_name):

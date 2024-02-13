@@ -80,12 +80,61 @@ def distinct_total_data_homogeneous():
         print("文件%s处理完成"%(compress_data_path))
     save_to_local(save_item = total_set, save_path = total_result_path + "triple.txt") 
     
+# 处理异构图数据
+def process_heterogenous(file_path):
+    types_line_dict = dict()
+    with open(file_path, "r") as file:
+        for line in file:
+            id1, id2, relation_id, node1, node2, relation, timestamp = line.split("\t")
+            type1 = node1.split("_")[-1]
+            type2 = node2.split("_")[-1]
+            timestamp = timestamp.replace("\n", "")
+            details = "%s\t%s\t%s\t%s\t"%(id1, relation_id, id2, timestamp)
+            line_type = "%s-%s-%s"%(type1,relation,type2)
+            if line_type in types_line_dict:
+                types_line_dict[line_type].append(details)
+            else:
+                types_line_dict[line_type] = [details]
+    return types_line_dict
+
+# 保存异构图中各种三元组的信息
+def save_heterogenous(file_path, types_line_dict):
+    hetero_triples_path = file_path + "/hetero_triples/"
+    try:
+        os.mkdir(hetero_triples_path)
+    except:
+        pass
+    for key in types_line_dict:
+        save_path = hetero_triples_path + key + ".txt"
+        details = types_line_dict[key]
+        save_to_local(details, save_path)
+
+# 单线程处理文件
+def extrace_types_triple_single(file):
+    file_path = splited_result_path + file
+    encoding_triple_path = file_path + "/encode_triple.txt"
+    types_line_dict = process_heterogenous(encoding_triple_path)
+    # 保存
+    save_heterogenous(file_path, types_line_dict)
+    print("%s处理完成"%(file_path))
+    
+# 多线程处理文件
+def extract_types_triple_muti_process(file_dir_path, num_processes):
+    process_pool = mp.Pool(num_processes)
+    for file in os.listdir(file_dir_path):
+        process_pool.apply_async(extrace_types_triple_single, args=(file,))
+    process_pool.close()
+    process_pool.join()
 # 主要任务，压缩与处理
 if __name__ == "__main__":
+    extract_types_triple_muti_process(splited_result_path, num_processes)
+
+        
+
     # distinct_single_data()
     # extract_all_file_nodes(splited_result_path)
-    #  distinct_total_data_heterogeneous()
-     distinct_total_data_homogeneous()
+    # distinct_total_data_heterogeneous()
+    # distinct_total_data_homogeneous()
     
     # 深度优先搜索，放后面弄
     
