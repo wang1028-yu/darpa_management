@@ -14,6 +14,15 @@ def save_dict_to_local(save_item, save_path, file_name):
                 f.write(str(item) + "\t" + str(save_item[item]) + "\n")
     except:
         os.remove(save_path + "/" + file_name +".txt")
+        
+def save_list_to_local(save_item, save_path, file_name):
+    try:
+        # 存txt一份
+        with open(save_path + "/" + file_name +".txt", "w") as f:
+            for line in save_item:
+                f.write(line + "\n")
+    except:
+        os.remove(save_path + "/" + file_name +".txt")
 
         
 # 把三元组存储到本地

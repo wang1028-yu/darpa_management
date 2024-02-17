@@ -72,7 +72,6 @@ def encode_triple(triple_file_path, uuid_id_dict, uuid_name_dict, relation_dict,
             relaiton_id = relation_dict.get(relation)
             if None in [name1, name2]:
                 continue
-            # result_list.append("%s\t%s\t%s\t%s\t%s"%(relaiton_id, name1, name2, relation, timestamp))            
             result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s"%(id1, id2, relaiton_id, name1, name2, relation, timestamp))
     with open(save_path, "w") as file:
         for line in result_list:
@@ -80,37 +79,138 @@ def encode_triple(triple_file_path, uuid_id_dict, uuid_name_dict, relation_dict,
     
 # 编码三元组
 def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
-    node_dict = {}
-    node_set = set()
-    count = 0 
     result_list = []
+    # 静态编码
+    static_file_node_set = set()
+    static_subject_node_set = set()
+    static_netflow_node_set = set()
+    # 动态编码
+    dynamic_file_node_set = set()
+    dynamic_subject_node_set = set()
+    dynamic_netflow_node_set = set()
+    # 动静态结合字典
+    static_dynamic_dict = dict()
+    static_dynamic_subject_dict = dict()
+    static_dynamic_file_dict = dict()
+    static_dynamic_netflow_dict = dict()
+    # 最后编码结果列表
+    encode_result_list = []
     with open(triple_file_path, "r") as file:
         for triple in file:
             [node1, relation, node2, timestamp] = triple.split("\t")
+            timestamp = int(timestamp.strip())
             name1 = uuid_name_dict.get(node1)
             name2 = uuid_name_dict.get(node2)
             if None in [name1, name2]:
                 continue
-            if (name1 in node_set) == False:
-                node_set.add(name1)
-                node_dict[name1] = count
-                count += 1
-            if (name2 in node_set) == False:
-                node_set.add(name2)
-                node_dict[name2] = count
-                count += 1 
-            id1 = node_dict.get(name1)
-            id2 = node_dict.get(name2)
+            for node_name in [name1, name2]:
+                type = node_name.split("_")[-1]
+                if type == "subject":
+                    static_subject_node_set.add(node_name)
+                    dynamic_subject_node_set.add((node_name, timestamp))
+                elif type == "file":
+                    static_file_node_set.add(node_name)
+                    dynamic_file_node_set.add((node_name, timestamp))
+                elif type == "netflow":
+                    static_netflow_node_set.add(node_name)
+                    dynamic_netflow_node_set.add((node_name, timestamp))
             relaiton_id = relation_dict.get(relation)
-            result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s"%(id1, id2, relaiton_id, name1, name2, relation, timestamp))    
-    with open(save_path + "/encode_triple.txt", "w") as file:
-        for line in result_list:
-            file.write(line)
-    save_dict_to_local(save_item = node_dict, save_path = save_path, file_name = "name_id_dict")
-    
- 
-    
+            result_list.append([relaiton_id, name1, name2, relation, timestamp]) 
+    # 静态字典
+    static_subject_dict = dict(zip(list(static_subject_node_set), range(len(static_subject_node_set))))
+    static_file_dict = dict(zip(list(static_file_node_set), range(len(static_file_node_set))))
+    static_netflow_dict = dict(zip(list(static_netflow_node_set), range(len(static_netflow_node_set))))
+    # 动态字典
+    dynamic_subject_dict = dict(zip(list(dynamic_subject_node_set), range(len(dynamic_subject_node_set))))
+    dynamic_file_dict = dict(zip(list(dynamic_file_node_set), range(len(dynamic_file_node_set))))
+    dynamic_netflow_dict = dict(zip(list(dynamic_netflow_node_set), range(len(dynamic_netflow_node_set))))
 
+    for item in result_list:
+        [relaiton_id, name1, name2, relation, timestamp] = item
+        if None in [name1, name2]:
+            continue
+        # 查询name1编码
+        type1 = name1.split("_")[-1]
+        if type1 == "subject":
+            static_id1 = static_subject_dict.get(name1)
+            dynamic_id1 = dynamic_subject_dict.get((name1, timestamp))
+            static_dynamic_subject_dict[dynamic_id1] = (static_id1, timestamp)
+        elif type1 == "file":
+            static_id1 = static_file_dict.get(name1)
+            dynamic_id1 = dynamic_file_dict.get((name1, timestamp))
+            static_dynamic_file_dict[dynamic_id1] = (static_id1, timestamp)
+        elif type1 == "netflow":
+            static_id1 = static_netflow_dict.get(name1)
+            dynamic_id1 = dynamic_netflow_dict.get((name1, timestamp))
+            static_dynamic_netflow_dict[dynamic_id1] = (static_id1, timestamp)
+        # 查询name2编码
+        type2= name2.split("_")[-1]
+        if type2 == "subject":
+            static_id2 = static_subject_dict.get(name2)
+            dynamic_id2 = dynamic_subject_dict.get((name2, timestamp))
+            static_dynamic_subject_dict[dynamic_id2] = (static_id2, timestamp)
+        elif type2 == "file":
+            static_id2 = static_file_dict.get(name2)
+            dynamic_id2 = dynamic_file_dict.get((name2, timestamp))
+            static_dynamic_file_dict[dynamic_id2] = (static_id2, timestamp)
+        elif type2 == "netflow":
+            static_id2 = static_netflow_dict.get(name2)
+            dynamic_id2 = dynamic_netflow_dict.get((name2, timestamp))
+            static_dynamic_netflow_dict[dynamic_id2] = (static_id2, timestamp)
+        
+        key1 = (type1, static_id1, name1)
+        key2 = (type2, static_id2, name2)
+        # 添加到动静态组合字典
+        if key1 in static_dynamic_dict:
+            static_dynamic_dict[key1].add((dynamic_id1, timestamp))
+        else:
+            static_dynamic_dict[key1] = set()
+            static_dynamic_dict[key1].add((dynamic_id1, timestamp))
+        if key2 in static_dynamic_dict:
+            static_dynamic_dict[key2].add((dynamic_id2, timestamp))
+        else:
+            static_dynamic_dict[key2] = set()
+            static_dynamic_dict[key2].add((dynamic_id2, timestamp))
+        # 添加到编码结果列表
+        encode_result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(dynamic_id1, dynamic_id2, static_id1, static_id2, relaiton_id, name1, name2, relation, timestamp))
+    
+    # 添加相同节点的时间关系边
+    for key in static_dynamic_dict:
+        (type, static_id, name) = key
+        edges = static_dynamic_dict[key]
+        edges = sorted(list(edges), key=lambda x:x[1])
+        for index in range(0, len(edges)-1, 2):
+            node1 = edges[index]
+            node2 = edges[index + 1]
+            dynamic_id1 = node1[0]
+            dynamic_id2 = node2[0]
+            timestamp = node2[1]
+            # TODO 后面再优化
+            relaiton_id = 99
+            relation = "EVENT_DYNAMIC"
+            encode_result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(dynamic_id1, dynamic_id2, static_id, static_id, relaiton_id, name, name, relation, timestamp))
+        
+    with open(save_path + "/encode_triple.txt", "w") as file:
+        for line in encode_result_list:
+            file.write(line)    
+    os.mkdir(save_path + "/types/")
+    # 字典保存到本地
+    dynamic_subject_list = [item[0]+"\t"+str(dynamic_subject_dict[item]) for item in dynamic_subject_dict]
+    dynamic_file_list = [item[0]+"\t"+str(dynamic_file_dict[item]) for item in dynamic_file_dict]
+    dynamic_netflow_list = [item[0]+"\t"+str(dynamic_netflow_dict[item]) for item in dynamic_netflow_dict]
+    save_list_to_local(dynamic_subject_list, save_path + "/types/", "subject")
+    save_list_to_local(dynamic_file_list, save_path + "/types/", "file")
+    save_list_to_local(dynamic_netflow_list, save_path + "/types/", "netflow")
+    
+    static_dynamic_subject_dict = dict(sorted(static_dynamic_subject_dict.items(), reverse=False))
+    static_dynamic_file_dict = dict(sorted(static_dynamic_file_dict.items(), reverse=False))
+    static_dynamic_netflow_dict = dict(sorted(static_dynamic_netflow_dict.items(), reverse=False))
+
+    save_dict_to_local(static_dynamic_subject_dict, save_path + "/types/", "dynamic_subject")
+    save_dict_to_local(static_dynamic_file_dict, save_path + "/types/", "dynamic_file")
+    save_dict_to_local(static_dynamic_netflow_dict, save_path + "/types/", "dynamic_netflow")
+    
+    
 # if __name__ =="__main__":
 def run():
     # 节点字典列表
@@ -135,20 +235,9 @@ def run():
     print("保存字典中。。。")
     clean_folder(total_result_path)
     # 编码节点, 关系
-    # save_dict_to_local(save_item = uuid_id_dict, save_path = total_result_path, file_name = "id_uuid_dict")
     save_dict_to_local(save_item = uuid_name_dict, save_path = total_result_path, file_name = "uuid_name_dict") 
-    # save_dict_to_local(save_item = id_name_dict, save_path = total_result_path, file_name = "id_name_dict")    
     save_dict_to_local(save_item = relation_dict, save_path = total_result_path, file_name = "id_relation_dict")
     print("保存字典完成")
-    # 节点压缩， 压缩临时文件， 要不要弄？？？
-    # TODO
-
-    # os.mkdir(total_result_path + "/types/")
-    # # 提取各种类型的节点
-    # node_type_list = ["subject", "netflow", "file"]
-    # for node_type in node_type_list:
-    #     node_type_save_path = total_result_path + "/types/"
-    #     extract_node_in_type(id_name_dict, node_type, node_type_save_path)
     
     # 编码三元组 nodeid1, nodeid2, relaitonid, node1, node2, relation, timestamp
     for file in os.listdir(splited_result_path):
@@ -158,14 +247,3 @@ def run():
         print("处理%s中。。。。"%(file))
         encode_triple_2(triple_path, uuid_name_dict, relation_dict, save_path)
         print("%s处理完成"%(file))
-    
-    # 提取每个文件的每种类型
-    for file in os.listdir(splited_result_path):
-        os.mkdir(splited_result_path + file + "/types/")
-        dict_path = splited_result_path + file + "/name_id_dict.pkl"
-        with open(dict_path, "rb") as f:
-            node_dict = pickle.load(f)
-        node_type_list = ["subject", "netflow", "file"]
-        for node_type in node_type_list:
-            node_type_save_path = splited_result_path + file + "/types/"
-            extract_node_in_type_with_total_dict(node_dict, node_type, node_type_save_path)

@@ -79,6 +79,7 @@ def decode_hex(s):
         return None
     
 # 转化成语料库
+# distinct_XXX_corpus 中，id是原始文件的id，而值是经过gensim预处理之后的值
 def trans_corpus_distinct(file_path, distinct_save_path, features_path, type):
     distinct_set = set()
     origin_corpus = dict()
@@ -139,8 +140,8 @@ def doc2vec(corpus_path, file_path, vector_size, min_count, epochs, start_lr, en
     train_corpus = data_set
     if len(train_corpus) == 0:
         return 
-    # 模型的训练与重载
     
+    # 模型的训练与重载
     model = gensim.models.doc2vec.Doc2Vec(
         vector_size = vector_size, 
         min_count = min_count, 
@@ -150,19 +151,24 @@ def doc2vec(corpus_path, file_path, vector_size, min_count, epochs, start_lr, en
     model.train(train_corpus, total_examples=model.corpus_count, epochs=model.epochs)
     
     doc_2_vec_dict = dict()
+    # doc2vec dict中，键是语料，值是向量
     for doc_id in range(len(train_corpus)):
         doc = train_corpus[doc_id].words
         infer_vector = model.dv[doc_id]    
         doc_2_vec_dict[" ".join(doc)] = np.array(infer_vector)
-    # model.dv.save(dv_save_path)
+    # id_dv中，键是原始文件中的id，值是向量
     with open(file_path, "r") as file:
         for line in file:
+            # 分离id与值
             detail, id = line.split("\t")
+            # 将值处理成语料
             corpus = process_single_line(detail, type)
             corpus = " ".join(corpus)
+            # 从语料-向量字典中查询
             vector = doc_2_vec_dict.get(corpus)
             id_dv_dict[int(id)] = vector
     
+    # print(id_dv_dict)
     # 特征保存到本地
     with open(dv_save_path, 'wb') as f:
         pickle.dump(id_dv_dict, f)
@@ -188,6 +194,7 @@ def doc2vec_single_file(file):
     subject_features_path = types_path + "/subject_corpus.txt"
     netflow_features_path = types_path + "/netflow_corpus.txt"
     
+    # 语料特征 doc2vec
     file_dv_save_path = types_path + "/file_features.pkl"
     subject_dv_save_path = types_path + "/subject_features.pkl"
     netflow_dv_save_path = types_path + "/netflow_features.pkl"
@@ -250,12 +257,7 @@ def doc2vec_muti_process(file_dir_path, num_processes):
     #     doc2vec_single_file(file)
 
 # 构造特征的函数
-if __name__ == "__main__":
-# def run():
-    try:
-        os.rmdir("./finish")
-    except:
-        pass
+# if __name__ == "__main__":
+def run():
     doc2vec_muti_process(splited_result_path, num_processes)
     # doc2vec_muti_process(splited_result_path, 1)
-    os.mkdir("./finish")
