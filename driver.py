@@ -15,6 +15,6 @@ if __name__ == "__main__":
     # preprocess_data.run(trace_source_data, 1)
     # preprocess_data.run(trace_source_data, num_processes)
     merge.run()
-    features.run()
-    process_data.run()
+    # features.run()
+    # process_data.run()
     os.mkdir("./finish")

@@ -4,8 +4,8 @@ sys.path.append("../requirements/OpenKE")
 sys.path.append("./utils")
 
 source_data_path = "/home/wcy/workspace/source_data/darpa"
-# trace_source_data = source_data_path + "/trace"
-trace_source_data = "./test_data/"
+trace_source_data = source_data_path + "/trace"
+# trace_source_data = "./test_data/"
 cadets_source_data = source_data_path + "/cadets"
 little_test_data = source_data_path + "/little_test"
 # num_processes = mp.cpu_count() - 1

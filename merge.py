@@ -175,20 +175,20 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
         encode_result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(dynamic_id1, dynamic_id2, static_id1, static_id2, relaiton_id, name1, name2, relation, timestamp))
     
     # 添加相同节点的时间关系边
-    for key in static_dynamic_dict:
-        (type, static_id, name) = key
-        edges = static_dynamic_dict[key]
-        edges = sorted(list(edges), key=lambda x:x[1])
-        for index in range(0, len(edges)-1, 2):
-            node1 = edges[index]
-            node2 = edges[index + 1]
-            dynamic_id1 = node1[0]
-            dynamic_id2 = node2[0]
-            timestamp = node2[1]
-            # TODO 后面再优化
-            relaiton_id = 99
-            relation = "EVENT_DYNAMIC"
-            encode_result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(dynamic_id1, dynamic_id2, static_id, static_id, relaiton_id, name, name, relation, timestamp))
+    # for key in static_dynamic_dict:
+    #     (type, static_id, name) = key
+    #     edges = static_dynamic_dict[key]
+    #     edges = sorted(list(edges), key=lambda x:x[1])
+    #     for index in range(0, len(edges)-1, 2):
+    #         node1 = edges[index]
+    #         node2 = edges[index + 1]
+    #         dynamic_id1 = node1[0]
+    #         dynamic_id2 = node2[0]
+    #         timestamp = node2[1]
+    #         # TODO 后面再优化
+    #         relaiton_id = 99
+    #         relation = "EVENT_DYNAMIC"
+    #         encode_result_list.append("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(dynamic_id1, dynamic_id2, static_id, static_id, relaiton_id, name, name, relation, timestamp))
         
     with open(save_path + "/encode_triple.txt", "w") as file:
         for line in encode_result_list:
@@ -202,10 +202,18 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
     save_list_to_local(dynamic_file_list, save_path + "/types/", "file")
     save_list_to_local(dynamic_netflow_list, save_path + "/types/", "netflow")
     
+    # static_subject_list = [item+"\t"+str(static_subject_dict[item]) for item in static_subject_dict]
+    # static_file_list = [item+"\t"+str(static_file_dict[item]) for item in static_file_dict]
+    # static_netflow_list = [item+"\t"+str(static_netflow_dict[item]) for item in static_netflow_dict]
+    # save_list_to_local(static_subject_list, save_path + "/types/", "subject")
+    # save_list_to_local(static_file_list, save_path + "/types/", "file")
+    # save_list_to_local(static_netflow_list, save_path + "/types/", "netflow")
+    
     static_dynamic_subject_dict = dict(sorted(static_dynamic_subject_dict.items(), reverse=False))
     static_dynamic_file_dict = dict(sorted(static_dynamic_file_dict.items(), reverse=False))
     static_dynamic_netflow_dict = dict(sorted(static_dynamic_netflow_dict.items(), reverse=False))
-
+    # 格式
+    # dynamic_id, (static_id, time)
     save_dict_to_local(static_dynamic_subject_dict, save_path + "/types/", "dynamic_subject")
     save_dict_to_local(static_dynamic_file_dict, save_path + "/types/", "dynamic_file")
     save_dict_to_local(static_dynamic_netflow_dict, save_path + "/types/", "dynamic_netflow")

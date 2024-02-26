@@ -31,15 +31,16 @@ def process_single_file_single_process(file_path):
             if type == 'com.bbn.tc.schema.avro.cdm18.Event':
                 # 说明这行是event
                 node = parse_event_data(line)
+                second_timestamp = node["timestamp"] // 1000000000
                 # 添加到三元组
-                triple_list.append([node['sub'], node['type'], node["obj"], node["timestamp"]])
+                triple_list.append([node['sub'], node['type'], node["obj"], second_timestamp])
                 # 添加到relation字典
                 relation_set.append(node["type"])
-                time_list.append(node["timestamp"] / 1000000000)
+                time_list.append(second_timestamp)
             else:
                 if type == "com.bbn.tc.schema.avro.cdm18.Subject":
                     node = parse_subject_data(line)
-                    node_set.append((node["uuid"], node["name"] + "_" + str(node["ppid"]) + "_" + str(node["cmdLine"]) + "_" + node["type"]))
+                    node_set.append((node["uuid"], node["name"] + "_" + str(node["cid"]) + "_" + str(node["cmdLine"]) + "_" + node["type"]))
                 # elif type == "com.bbn.tc.schema.avro.cdm18.Principal":
                 #     node = parse_principal_data(line)
                 #     node_set.append((node['uuid'], str(node['userId']) + "_" + node["type"]))
