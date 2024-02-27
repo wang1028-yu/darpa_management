@@ -8,3 +8,5 @@
 /graph_data
 /data
 /test_data
+/attack_count.py
+/attack_analyse.py
