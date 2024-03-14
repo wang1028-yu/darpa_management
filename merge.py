@@ -202,18 +202,10 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
     save_list_to_local(dynamic_file_list, save_path + "/types/", "file")
     save_list_to_local(dynamic_netflow_list, save_path + "/types/", "netflow")
     
-    # static_subject_list = [item+"\t"+str(static_subject_dict[item]) for item in static_subject_dict]
-    # static_file_list = [item+"\t"+str(static_file_dict[item]) for item in static_file_dict]
-    # static_netflow_list = [item+"\t"+str(static_netflow_dict[item]) for item in static_netflow_dict]
-    # save_list_to_local(static_subject_list, save_path + "/types/", "subject")
-    # save_list_to_local(static_file_list, save_path + "/types/", "file")
-    # save_list_to_local(static_netflow_list, save_path + "/types/", "netflow")
-    
     static_dynamic_subject_dict = dict(sorted(static_dynamic_subject_dict.items(), reverse=False))
     static_dynamic_file_dict = dict(sorted(static_dynamic_file_dict.items(), reverse=False))
     static_dynamic_netflow_dict = dict(sorted(static_dynamic_netflow_dict.items(), reverse=False))
     # 格式
-    # dynamic_id, (static_id, time)
     save_dict_to_local(static_dynamic_subject_dict, save_path + "/types/", "dynamic_subject")
     save_dict_to_local(static_dynamic_file_dict, save_path + "/types/", "dynamic_file")
     save_dict_to_local(static_dynamic_netflow_dict, save_path + "/types/", "dynamic_netflow")

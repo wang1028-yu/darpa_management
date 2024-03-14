@@ -10,3 +10,5 @@
 /test_data
 /attack_count.py
 /attack_analyse.py
+/fasttext_test.py
+/features.py

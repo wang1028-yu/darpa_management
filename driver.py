@@ -11,9 +11,9 @@ if __name__ == "__main__":
         os.rmdir("./finish")
     except:
         pass
-    preprocess_data.run("./example", 1)
+    # preprocess_data.run("./example", 1)
     # preprocess_data.run(trace_source_data, 1)
-    # preprocess_data.run(trace_source_data, num_processes)
+    preprocess_data.run(trace_source_data, num_processes)
     merge.run()
     features.run()
     process_data.run()

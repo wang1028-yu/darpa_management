@@ -44,3 +44,14 @@ EVENT_OTHER	A --> B
 2. 运行merge.py 整合所有文件的处理数据
 
 config.py配置模型参数
+
+
+start_time	2018-04-10 14:28:57
+end_time	2018-04-10 16:23:18
+
+
+tart_time	2018-04-13 16:21:16
+end_time	2018-04-13 17:21:58
+
+start_time	2018-04-13 17:21:58
+end_time	2018-04-13 18:47:44

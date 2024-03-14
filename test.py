@@ -6,6 +6,7 @@ sys.path.append("..")
 from config import *
 from data_analyse_functions import *
 import pandas as pd
+from data_store_functions import *
 
 # 测试
 def test_output(file_name):
@@ -46,19 +47,12 @@ def test_chunk_file(file_path):
 
 
 if __name__ =="__main__":
-    # with open("./example/1.json", "r") as file:
-    #     data = pd.read_json(file, lines=True)
-    #     print(data[1:4])
-    # data = pd.read_json("./example/1.json", lines=True)
-    # for line in data.itertuples():
-    #     print(line)
+    netflow_features_path = "./result/splited_result/ta1-trace-e3-official.json.64/types/netflow_features.pkl"
+    netflow_features = load_pickle(netflow_features_path)
+    for key in netflow_features:
+        print(len(netflow_features[key]))
+        print(key)
+    
+    print(netflow_features[867])
     
     
-    # 异构图数据
-    node_data = {
-        "file" : [1, 2, 3, 4, 5],
-        "process" : [6, 7, 8, 9, 10],
-        "netflow" : [11, 12, 13]
-    }
-    # 同构图数据
-    node_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]

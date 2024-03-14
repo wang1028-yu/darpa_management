@@ -36,7 +36,10 @@ def process_single_line(detail, type):
         return gensim.utils.simple_preprocess(result)
     elif (type == "netflow"):
         detail = detail.replace("_netflow", "").replace("\n", "")
-        details = detail.split("->")[-1]
+        if len(detail.split("->")[-1][0]) == 1:
+            details = detail.split("->")[0]
+        else:
+            details = detail.split("->")[-1]
         details = re.split(r'\.|\:', details)
         return details
 
@@ -83,6 +86,7 @@ def decode_hex(s):
 def trans_corpus_distinct(file_path, distinct_save_path, features_path, type):
     distinct_set = set()
     origin_corpus = dict()
+    # origin_data = []
     with open(file_path, "r") as f:
         for line in f:
             detail, id = line.split("\t")
@@ -90,12 +94,15 @@ def trans_corpus_distinct(file_path, distinct_save_path, features_path, type):
             result = " ".join(result).strip()
             distinct_set.add(result)
             origin_corpus[int(id)] = result
+            # origin_data.append(str(detail) + "---->" + str(result) + "\n")
     # 文件名
     feature_file_name = features_path.split("/")[-1]
     feature_file_path = features_path.replace(feature_file_name, "")
     feature_file_name = feature_file_name.replace(".txt", "")
     # 保存到本地
     save_to_local(distinct_set, distinct_save_path)
+    # if type == "netflow":
+    #     save_to_local(origin_data, "./test/netflow.txt")
     # 语料保存到本地
     save_dict_to_local(origin_corpus, feature_file_path, feature_file_name)
 
