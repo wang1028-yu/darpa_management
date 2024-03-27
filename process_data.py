@@ -107,6 +107,7 @@ def save_heterogenous(file_path, types_line_dict):
 # 单线程处理文件
 def extrace_types_triple_single(file):
     file_path = splited_result_path + file
+    print(file_path)
     encoding_triple_path = file_path + "/encode_triple.txt"
     types_line_dict = process_heterogenous(encoding_triple_path)
         
@@ -117,8 +118,15 @@ def extrace_types_triple_single(file):
 # 多线程处理文件
 def extract_types_triple_muti_process(file_dir_path, num_processes):
     process_pool = mp.Pool(num_processes)
+    
     for file in os.listdir(file_dir_path):
+        print(file)
         process_pool.apply_async(extrace_types_triple_single, args=(file,))
+    
+    # for file in file_dir_path:
+    #     print(file)
+    #     process_pool.apply_async(extrace_types_triple_single, args=(file))
+    
     process_pool.close()
     process_pool.join()
     
@@ -131,4 +139,6 @@ def process_dynamic_graph():
 # if __name__ == "__main__":
 def run():
     # 提取
+    # file_path = [str(i) + ".json" for i in range(526)]
+    # extract_types_triple_muti_process(file_path, num_processes)
     extract_types_triple_muti_process(splited_result_path, num_processes)

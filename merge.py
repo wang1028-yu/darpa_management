@@ -120,6 +120,7 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
     static_subject_dict = dict(zip(list(static_subject_node_set), range(len(static_subject_node_set))))
     static_file_dict = dict(zip(list(static_file_node_set), range(len(static_file_node_set))))
     static_netflow_dict = dict(zip(list(static_netflow_node_set), range(len(static_netflow_node_set))))
+    
     # 动态字典
     dynamic_subject_dict = dict(zip(list(dynamic_subject_node_set), range(len(dynamic_subject_node_set))))
     dynamic_file_dict = dict(zip(list(dynamic_file_node_set), range(len(dynamic_file_node_set))))
@@ -194,13 +195,24 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
         for line in encode_result_list:
             file.write(line)    
     os.mkdir(save_path + "/types/")
+    
     # 字典保存到本地
-    dynamic_subject_list = [item[0]+"\t"+str(dynamic_subject_dict[item]) for item in dynamic_subject_dict]
-    dynamic_file_list = [item[0]+"\t"+str(dynamic_file_dict[item]) for item in dynamic_file_dict]
-    dynamic_netflow_list = [item[0]+"\t"+str(dynamic_netflow_dict[item]) for item in dynamic_netflow_dict]
-    save_list_to_local(dynamic_subject_list, save_path + "/types/", "subject")
-    save_list_to_local(dynamic_file_list, save_path + "/types/", "file")
-    save_list_to_local(dynamic_netflow_list, save_path + "/types/", "netflow")
+    # dynamic_subject_list = [item[0]+"\t"+str(dynamic_subject_dict[item]) for item in dynamic_subject_dict]
+    # dynamic_file_list = [item[0]+"\t"+str(dynamic_file_dict[item]) for item in dynamic_file_dict]
+    # dynamic_netflow_list = [item[0]+"\t"+str(dynamic_netflow_dict[item]) for item in dynamic_netflow_dict]
+    
+    # save_list_to_local(dynamic_subject_list, save_path + "/types/", "subject")
+    # save_list_to_local(dynamic_file_list, save_path + "/types/", "file")
+    # save_list_to_local(dynamic_netflow_list, save_path + "/types/", "netflow")
+    
+    # 静态字典
+    static_file_list = [item + "\t" + str(static_file_dict[item]) for item in static_file_dict]
+    static_subject_list = [item + "\t" + str(static_subject_dict[item]) for item in static_subject_dict]
+    static_netflow_list = [item + "\t" + str(static_netflow_dict[item]) for item in static_netflow_dict]
+    
+    save_list_to_local(static_subject_list, save_path + "/types/", "subject")
+    save_list_to_local(static_file_list, save_path + "/types/", "file")
+    save_list_to_local(static_netflow_list, save_path + "/types/", "netflow")
     
     static_dynamic_subject_dict = dict(sorted(static_dynamic_subject_dict.items(), reverse=False))
     static_dynamic_file_dict = dict(sorted(static_dynamic_file_dict.items(), reverse=False))
@@ -211,13 +223,15 @@ def encode_triple_2(triple_file_path, uuid_name_dict, relation_dict, save_path):
     save_dict_to_local(static_dynamic_netflow_dict, save_path + "/types/", "dynamic_netflow")
     
     
-# if __name__ =="__main__":
-def run():
+if __name__ =="__main__":
+# def run():
     # 节点字典列表
     node_list = []
     # 关系字典列表
     relation_list = []
-    for file in os.listdir(splited_result_path):
+    # for file in os.listdir(splited_result_path):
+    for index in range(211):
+        file = "ta1-trace-e3-official.json.%s/"%(index)
         node_path = splited_result_path + file + "/uuid_name_dict.pkl"
         relation_path = splited_result_path + file + "/id_relation_dict.pkl"
         with open(node_path, "rb") as f:
@@ -240,10 +254,59 @@ def run():
     print("保存字典完成")
     
     # 编码三元组 nodeid1, nodeid2, relaitonid, node1, node2, relation, timestamp
-    for file in os.listdir(splited_result_path):
-        print(file)
+    # for file in os.listdir(splited_result_path):
+    #     print(file)
+    #     triple_path = splited_result_path + file + "/triple.txt"
+    #     save_path = splited_result_path + file       
+    #     print("处理%s中。。。。"%(file))
+    #     encode_triple_2(triple_path, uuid_name_dict, relation_dict, save_path)
+    #     print("%s处理完成"%(file))
+    
+    
+    # 编码三元组 nodeid1, nodeid2, relaitonid, node1, node2, relation, timestamp
+    for i in range(263):
+        file = "%s.json"%(i)
         triple_path = splited_result_path + file + "/triple.txt"
-        save_path = splited_result_path + file       
+        save_path = splited_result_path + file
         print("处理%s中。。。。"%(file))
         encode_triple_2(triple_path, uuid_name_dict, relation_dict, save_path)
         print("%s处理完成"%(file))
+    
+    file_node_set = set()
+    netflow_node_set = set()
+    subject_node_set = set()
+    
+    # 生成去重原始语料库
+    for i in range(263):
+        file = "%s.json"%(i)
+        single_file_node_path = splited_result_path + file + "/types/file.txt"
+        single_netflow_node_path = splited_result_path + file + "/types/netflow.txt"
+        single_subject_node_path = splited_result_path + file + "/types/subject.txt"
+        with open(single_file_node_path, "r") as f:
+            for line in f:
+                name, id = line.split("\t")
+                file_node_set.add(name)
+        with open(single_netflow_node_path, "r") as f:
+            for line in f:
+                name, id = line.split("\t")
+                netflow_node_set.add(name)
+        with open(single_subject_node_path, "r") as f:
+            for line in f:
+                name, id = line.split("\t")
+                subject_node_set.add(name)
+    
+    # 保存原始语料库
+    file_node_dict = dict(zip(list(file_node_set), range(len(file_node_set))))
+    subject_node_dict = dict(zip(list(subject_node_set), range(len(subject_node_set))))
+    netflow_node_dict = dict(zip(list(netflow_node_set), range(len(netflow_node_set))))
+    
+    file_node_list = [item + "\t" + str(file_node_dict[item]) for item in file_node_dict]
+    subject_node_list = [item + "\t" + str(subject_node_dict[item]) for item in subject_node_dict]
+    netflow_node_list = [item + "\t" + str(netflow_node_dict[item]) for item in netflow_node_dict]
+    # 保存到本地
+    save_list_to_local(subject_node_list, "./result/total_result/", "subject")
+    print("subject保存完成")
+    save_list_to_local(file_node_list,  "./result/total_result/", "file")
+    print("file保存完成")
+    save_list_to_local(netflow_node_list, "./result/total_result/", "netflow")
+    print("netflow保存完成")

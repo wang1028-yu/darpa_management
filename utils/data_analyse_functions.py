@@ -3,6 +3,7 @@ from data_store_functions import *
 import datetime
 import ujson
 import pickle
+import time
 
 def load_json(line):
     return ujson.loads(line)
@@ -299,6 +300,10 @@ def extract_time(file_path):
 # 时间戳转日期
 def timestamp_to_date(timestamp):
     return datetime.datetime.fromtimestamp(timestamp)
+
+def date_to_timestamp(date):
+    time_array = time.strptime(date, "%Y-%m-%d %H:%M:%S")
+    return time.mktime(time_array)
 
 # 节点去重
 def node_distinct(node_path):

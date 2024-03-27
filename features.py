@@ -165,15 +165,20 @@ def doc2vec(corpus_path, file_path, vector_size, min_count, epochs, start_lr, en
         doc_2_vec_dict[" ".join(doc)] = np.array(infer_vector)
     # id_dv中，键是原始文件中的id，值是向量
     with open(file_path, "r") as file:
+        count = 0 
         for line in file:
             # 分离id与值
             detail, id = line.split("\t")
+            # print(line)
             # 将值处理成语料
             corpus = process_single_line(detail, type)
             corpus = " ".join(corpus)
             # 从语料-向量字典中查询
             vector = doc_2_vec_dict.get(corpus)
             id_dv_dict[int(id)] = vector
+            count += 1
+    # print(count)
+    # print(len(id_dv_dict))
     
     # print(id_dv_dict)
     # 特征保存到本地
@@ -256,6 +261,9 @@ def doc2vec_muti_process(file_dir_path, num_processes):
     process_pool = mp.Pool(num_processes)
     for file in os.listdir(file_dir_path):
         process_pool.apply_async(doc2vec_single_file, args=(file,))
+        
+    # for file in file_dir_path:
+    #     process_pool.apply_async(doc2vec_single_file, args=(file,))
     process_pool.close()
     process_pool.join()
     
@@ -264,7 +272,11 @@ def doc2vec_muti_process(file_dir_path, num_processes):
     #     doc2vec_single_file(file)
 
 # 构造特征的函数
-# if __name__ == "__main__":
-def run():
-    doc2vec_muti_process(splited_result_path, num_processes)
+if __name__ == "__main__":
+# def run():
+    # doc2vec_muti_process(splited_result_path, num_processes)
+    file_path = [str(i) + ".json" for i in range(526)]
+    # print(file_path)
     # doc2vec_muti_process(splited_result_path, 1)
+    doc2vec_muti_process(file_path, num_processes)
+    # doc2vec_muti_process(file_path, 1)

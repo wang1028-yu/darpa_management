@@ -41,24 +41,12 @@ def process_single_file_single_process(file_path):
                 if type == "com.bbn.tc.schema.avro.cdm18.Subject":
                     node = parse_subject_data(line)
                     node_set.append((node["uuid"], node["name"] + "_" + str(node["cid"]) + "_" + str(node["cmdLine"]) + "_" + node["type"]))
-                # elif type == "com.bbn.tc.schema.avro.cdm18.Principal":
-                #     node = parse_principal_data(line)
-                #     node_set.append((node['uuid'], str(node['userId']) + "_" + node["type"]))
                 elif type == 'com.bbn.tc.schema.avro.cdm18.NetFlowObject':
                     node = parse_netflow_data(line)
                     node_set.append((node["uuid"], str(node["localAddress"])+":"+str(node["localPort"]) + "->" + str(node["remoteAddress"]) + ":" + str(node["remotePort"]) + "_" + node["type"]))
                 elif type == 'com.bbn.tc.schema.avro.cdm18.FileObject':
                     node = parse_fileobject_data(line)
                     node_set.append((node["uuid"], str(node["path"]) + "_" + node["type"]))
-                # elif type == 'com.bbn.tc.schema.avro.cdm18.SrcSinkObject':
-                #     node = parse_srcsinkobject_data(line)
-                #     node_set.append((node["uuid"], str(node["base_pid"]) + "_" + node["type"]))
-                # elif type == 'com.bbn.tc.schema.avro.cdm18.UnnamedPipeObject':
-                #     node = parse_unnamedpipeobject_data(line)
-                #     node_set.append((node["uuid"], str(node["pid"]) + "_" + node["type"]))
-                # elif type == 'com.bbn.tc.schema.avro.cdm18.MemoryObject':
-                #     node = parse_memoryobject_data(line)
-                #     node_set.append((node["uuid"], str(node["memoryAddress"]) + "_" + node["type"]))
     file_name = file_path.split("/")[-1]
     save_path = splited_result_path + "/" + file_name
     node_set = set(node_set)
